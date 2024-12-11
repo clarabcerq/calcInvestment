@@ -9,9 +9,9 @@ public class CalculoTaxaLiquida {
 
         double montante = c.montante(c.capIn, c.periodo);
         double lb = c.lucroBruto();
-        double ir = c.impostoRenda(c.aliquota);
+        double ir = c.impostoRenda();
         double mLiq = c.mLiquido();
-        double taxaLiquida = c.taxaLiquidaAnual();
+        double taxaLiquida = c.taxaLiquidaMensal();
 
         System.out.println("O seu montante final bruto é R$" + String.format("%.2f", montante));
         System.out.println("Seu lucro bruto é de R$" + String.format("%.2f", lb));
@@ -23,7 +23,7 @@ public class CalculoTaxaLiquida {
     private double capIn;
     private double taxa_anual;
     private int periodo;
-    private double aliquota;
+    //private double aliquota;
 
     Scanner sc = new Scanner(System.in);
 
@@ -36,9 +36,6 @@ public class CalculoTaxaLiquida {
 
         System.out.println("Informe o número de meses: ");
         periodo = sc.nextInt();
-
-        System.out.println("Informe a aliquota: ");
-        aliquota = sc.nextDouble();
     }
 
     //convertendo a taxa anual de rendimeno em uma taxa de rendimento mensal
@@ -61,8 +58,23 @@ public class CalculoTaxaLiquida {
         return lucroBruto;
     }
 
+    public double calculoAliquota(int periodo) {
+        double aliquota;
+        if (periodo >= 1 && periodo <= 6) {
+            aliquota = 22.5;
+        }else if (periodo > 6 && periodo <= 12) {
+            aliquota = 20;
+        }else if (periodo > 12 && periodo <= 24) {
+            aliquota = 17.5;
+        }else{
+            aliquota = 15;
+        }
+        return aliquota;
+    }
+
     //3- Imposto de Renda. Como o investimento é de 2 anos, a alíquota de IR será de 15%.
-    public double impostoRenda(double aliquota) {
+    public double impostoRenda() {
+        double aliquota = calculoAliquota(periodo);
         double aliq = aliquota / 100;
         double m = montante(capIn, periodo);
         double lucroBruto = m - capIn;
@@ -73,13 +85,13 @@ public class CalculoTaxaLiquida {
     //4- Montante líquido após o IR
     public double mLiquido() {
         double m = montante(capIn, periodo);
-        double ir = impostoRenda(aliquota);
+        double ir = impostoRenda();
         double mLiq = m - ir;
         return mLiq;
     }
 
     //5- Taxa líquida anual
-    public double taxaLiquidaAnual() {
+    public double taxaLiquidaMensal() {
         double mLiq = mLiquido();
         double resultadoPotencia = Math.pow(mLiq / capIn, 1.0 / periodo);
         double taxaLiquida = (resultadoPotencia - 1) * 100;
